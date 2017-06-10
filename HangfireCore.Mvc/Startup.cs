@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
+using HangfireCore.Mvc.Data;
 using HangfireCore.Mvc.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,14 +28,26 @@ namespace HangfireCore.Mvc
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlite("DataSource=HangfireCore.db"));
             services.AddMvc();
+
+            // Register other services.
+            services.AddScoped<IMathService, MathService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(
+            IApplicationBuilder app, 
+            IHostingEnvironment env, 
+            ILoggerFactory loggerFactory,
+            AppDbContext ctx)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            ctx.Database.EnsureDeleted();
+            ctx.Database.EnsureCreated();
 
             if (env.IsDevelopment())
             {
