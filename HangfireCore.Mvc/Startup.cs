@@ -1,5 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using Hangfire;
+using Hangfire.MemoryStorage;
 using HangfireCore.Mvc.Data;
+using HangfireCore.Mvc.Infrastructure;
 using HangfireCore.Mvc.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,8 +32,8 @@ namespace HangfireCore.Mvc
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlite("DataSource=HangfireCore.db"));
+            services.AddDbContext<AppDbContext>(opts => opts.UseSqlite("DataSource=HangfireCore.db"));
+            services.AddHangfire( opts => opts.UseMemoryStorage());
             services.AddMvc();
 
             // Register other services.
@@ -41,6 +45,7 @@ namespace HangfireCore.Mvc
             IApplicationBuilder app, 
             IHostingEnvironment env, 
             ILoggerFactory loggerFactory,
+            IServiceProvider serviceProvider,
             AppDbContext ctx)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
@@ -67,6 +72,10 @@ namespace HangfireCore.Mvc
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            GlobalConfiguration.Configuration.UseActivator(new HangfireActivator(serviceProvider));
+            app.UseHangfireServer();
+            app.UseHangfireDashboard();
         }
     }
 }
