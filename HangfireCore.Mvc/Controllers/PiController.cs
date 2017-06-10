@@ -38,8 +38,8 @@ namespace HangfireCore.Mvc.Controllers
                 return BadRequest("Digits can not be greater than 32!");
             }
 
-            if(iterations > 50000){
-                return BadRequest("Iterations can not be greater than 50,000!");
+            if(iterations > 20000){
+                return BadRequest("Iterations can not be greater than 20,000!");
             }
 
             // Create job
