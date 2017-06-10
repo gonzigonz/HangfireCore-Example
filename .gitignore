@@ -1,0 +1,7 @@
+*.userprefs
+bin
+obj
+**/wwwroot/css/*.min.*
+**/wwwroot/js/*.min.*
+**/wwwroot/lib
+*.user
