@@ -51,8 +51,11 @@ function refreshJobs() {
 
 // Wire up events
 $('#queue-job').click(function () {
-    $.post("api/pi/queuejob", { digits: $('#digits').val(), iterations: $('#iterations').val() });
-    refreshJobs();
+    var data = { digits: $('#digits').val(), iterations: $('#iterations').val() };
+    $.post("api/pi/queuejob", data)
+        .always(function(){
+            refreshJobs();
+        });
 });
 
 $('#refresh').click(function () {
