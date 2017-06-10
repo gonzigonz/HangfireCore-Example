@@ -6,28 +6,24 @@ using Microsoft.AspNetCore.Mvc;
 using HangfireCore.Mvc.Services;
 using HangfireCore.Mvc.Models;
 using HangfireCore.Mvc.Data;
+using Hangfire;
 
 namespace HangfireCore.Mvc.Controllers
 {
     [Route("api/[controller]/[action]")]
     public class PiController : Controller
     {
-        private readonly AppDbContext _ctx;
-        private readonly IMathService _mathService;
+        private readonly IPiService _piService;
 
-        public PiController(
-            AppDbContext ctx,
-            IMathService mathService)
+        public PiController(IPiService piService)
         {
-            _ctx = ctx;
-            _mathService = mathService;
+            _piService = piService;
         }
 
         [HttpGet]
         public IActionResult List()
         {
-            var list = _ctx.PiJobs;
-            return Ok(list);
+            return Ok(_piService.GetJobs());
         }
         
         [HttpPost]
@@ -46,26 +42,14 @@ namespace HangfireCore.Mvc.Controllers
                 return BadRequest("Iterations can not be greater than 100,000!");
             }
 
-            var piJob = new PiJob()
-            {
-                Digits = digits,
-                Iterations = iterations,
-                Status = "Processing",
-                StartTime = DateTime.Now
-            };
+            // Create job
+            var job = _piService.CreateJob(digits, iterations);
 
-            _ctx.PiJobs.AddAsync(piJob);
-            _ctx.SaveChangesAsync();
-
-            var result = _mathService.GetPi(piJob.Digits, piJob.Iterations);
-
-            piJob.Result = result.ToString();
-            piJob.EndTime = DateTime.Now;
-            piJob.Status = "Complete";
-            _ctx.PiJobs.Update(piJob);
-            _ctx.SaveChangesAsync();
-
-            return Ok();
+            // Schedule job
+            var backgroundJobId = BackgroundJob.Enqueue<IPiService>( ps => ps.ScheduleJob(job));
+            
+            // Done
+            return Ok(new { backgroundJobId });
         }
     }
 }
