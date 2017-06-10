@@ -3,7 +3,7 @@
 </div>
 <div class="jumbotron">
     <h2>PI Calculator</h2>
-    <p>A simple example of intergrating Hangfire with a new ASP.NET Core 1.1 application!</p>
+    <p>Intergrating Hangfire with a ASP.NET Core 1.1 for processing background and long-running tasks.</p>
     <hr/>
     <p>Enter the number of <strong>Digits</strong> to calculate and the number of <strong>Iterations</strong> for accuracy (higher the number the more accurate it will be and the longer it will take).</p>
     <form class="form-inline">
@@ -15,15 +15,18 @@
             <label class="sr-only" for="iterations">Iterations</label>
             <input type="number" class="form-control" id="iterations" placeholder="Iterations">
         </div>
-        <span id="queue-job" class="btn btn-warning">Queue Job</span><br>
-        <small class="text-success">Max 32 Digits - Anything less than 1 or greater than 32 will be ignored.</small><br>
-        <small class="text-success">Max 100,000 Iterations - Anything less than 1 or greater than 100,000 will be ignored.</small>
+        <span id="queue-job" class="btn btn-info">Queue Job</span><br>
+        <small class="text-danger">Max 32 Digits - Anything less than 1 or greater than 32 will be ignored.</small><br>
+        <small class="text-danger">Max 100,000 Iterations - Anything less than 1 or greater than 100,000 will be ignored.</small>
     </form>
 </div>
 
 <!--Jobs-->
 <div>
-    <span id="refresh" class="btn btn-info pull-right">Refresh</span>
+    <div class="pull-right">
+        <a href="/Hangfire" class="btn btn-warning">See Hangfire Dashboard</a>
+        <span id="refresh" class="btn btn-primary">Refresh</span>
+    </div>
     <h3>Jobs</h3>
 </div>
 

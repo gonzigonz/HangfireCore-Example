@@ -6,23 +6,42 @@ function refreshJobs() {
         var jobsDiv = $('#jobs');
         jobsDiv.hide();
         jobsDiv.empty();
-        data.forEach(function(element) {
+        data.forEach(function(job) {
 
-            var startDate = new Date(element.startTime);
-            var endDate = new Date(element.endTime);
+            // Calculate dates
+            var duration = null;
+            var startDate = new Date(job.startTime);
+            if (job.endTime)
+            {
+                duration = new Date(job.endTime) - startDate;
+            };
 
+            // Get status colors
+            var statusClass = "";
+            if(job.status === "Complete")
+            {
+                statusClass = "label label-success";
+            } 
+            else if (job.status === "Processing")
+            {
+                statusClass = "label label-warning";
+            }
+
+            // Render row
             var rowHtml = '<tr>';
-            rowHtml += '<td>' + element.id + '</td>';
-            rowHtml += '<td>' + element.digits + '</td>';
-            rowHtml += '<td>' + element.iterations + '</td>';
-            rowHtml += '<td>' + element.result + '</td>';
-            rowHtml += '<td>' + element.status + '</td>';
+            
+            rowHtml += '<td>' + job.id + '</td>';
+            rowHtml += '<td>' + job.digits + '</td>';
+            rowHtml += '<td>' + job.iterations + '</td>';
+            rowHtml += '<td>' + job.result + '</td>';
+            rowHtml += '<td><span class="' + statusClass + '">' + job.status + '</span></td>';
             rowHtml += '<td>' + startDate.toDateString() + '</td>';
             rowHtml += '<td>' + startDate.toLocaleTimeString() + '</td>';
-            rowHtml += '<td class="text-right">' + (endDate - startDate) + '</td>';
+            rowHtml += '<td class="text-right">' + duration + '</td>';
             rowHtml += '</tr>'
 
             jobsDiv.append(rowHtml);
+
         }, this);
 
         jobsDiv.fadeIn(300);

@@ -33,8 +33,17 @@ namespace HangfireCore.Mvc.Controllers
         [HttpPost]
         public IActionResult QueueJob(int digits, int iterations)
         {
+            // Validation
             if(digits < 1 || iterations < 1){
                 return BadRequest("Values required!");
+            }
+
+            if(digits > 32){
+                return BadRequest("Digits can not be greater than 32!");
+            }
+
+            if(iterations > 100000){
+                return BadRequest("Iterations can not be greater than 100,000!");
             }
 
             var piJob = new PiJob()
